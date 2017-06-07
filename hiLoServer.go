@@ -9,6 +9,8 @@ import (
 var answer = 25
 var guesses = 0
 
+const MAXGUESSES = 5
+
 func main() {
 	http.HandleFunc("/hilo/", hilo)
 	http.HandleFunc("/", index)
@@ -16,7 +18,8 @@ func main() {
 	http.ListenAndServe("localhost:5000", nil)
 }
 func hilo(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<h1>Guess a number between 1 and 100 using hilo/[number]</h1>")
+	guesses++
+	fmt.Fprintf(w, "<h1>Guesses Taken: %d - Guesses Left: %d</h1>", guesses, MAXGUESSES-guesses)
 	fmt.Fprintf(w, "<h1>Path: %s</h1>", r.URL.Path)
 	guess := r.URL.Path[len("/hilo/"):]
 	fmt.Fprintf(w, "<h1>Type: %T = Value: %v</h1>", guess, guess)
