@@ -9,7 +9,8 @@ import (
 var answer = 25
 var guesses = 0
 
-const MAXGUESSES = 5
+//MAXGUESSES sets maximum number of guesses allowed before you lose
+const MAXGUESSES int = 5
 
 func main() {
 	http.HandleFunc("/hilo/", hilo)
@@ -19,22 +20,29 @@ func main() {
 }
 func hilo(w http.ResponseWriter, r *http.Request) {
 	guesses++
-	fmt.Fprintf(w, "<h1>Guesses Taken: %d - Guesses Left: %d</h1>", guesses, MAXGUESSES-guesses)
-	fmt.Fprintf(w, "<h1>Path: %s</h1>", r.URL.Path)
-	guess := r.URL.Path[len("/hilo/"):]
-	fmt.Fprintf(w, "<h1>Type: %T = Value: %v</h1>", guess, guess)
+	pathGuess := r.URL.Path[len("/hilo/"):]
 
 	// convert guess from string to int
-	s, err := strconv.Atoi(guess)
-	if err != nil {
-		fmt.Fprint(w, "<h1>Error detected in String conversion of guess</h1>")
-	}
-	if s < answer {
+	guess, _ := strconv.Atoi(pathGuess)
+
+	if guess < answer && guesses < MAXGUESSES {
 		fmt.Fprintf(w, "<h1>Too Low</h1>")
-	} else if s > answer {
+		fmt.Fprintf(w, "<h1>Guesses Taken: %d</h1>", guesses)
+		fmt.Fprintf(w, "<h1>Guesses Left: %d</h1>", MAXGUESSES-guesses)
+	} else if guess > answer && guesses < MAXGUESSES {
 		fmt.Fprintf(w, "<h1>Too high</h1>")
+		fmt.Fprintf(w, "<h1>Guesses Taken: %d</h1>", guesses)
+		fmt.Fprintf(w, "<h1>Guesses Left: %d</h1>", MAXGUESSES-guesses)
+	} else if guess == answer {
+		fmt.Fprintf(w, "<h1>Correct!</h1>")
+		fmt.Fprintf(w, "<h1>You win!!!</h1>")
+		guesses = 0
+		http.Redirect(w, r, "/", http.StatusResetContent)
 	} else {
-		fmt.Fprintf(w, "<h1>Correct!</h1><h1>You win!!!</h1>")
+		fmt.Fprintf(w, "<h1>You lose!!!</h1>")
+		guesses = 0
+		http.Redirect(w, r, "/", http.StatusResetContent)
+
 	}
 
 }
