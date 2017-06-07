@@ -35,7 +35,7 @@ func hilo(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "<h1>Guesses Left: %d</h1>", MAXGUESSES-guesses)
 	} else if guess == answer {
 		fmt.Fprintf(w, "<h1>Correct!</h1>")
-		fmt.Fprintf(w, "<h1>You win!!!</h1>")
+		fmt.Fprintf(w, "<h1>You win!!!!</h1>")
 		guesses = 0
 		http.Redirect(w, r, "/", http.StatusResetContent)
 	} else {
